@@ -21,14 +21,14 @@
         <ion-button slot="end" fill="clear" (click)="startUpload(img)">
           <ion-icon slot="icon-only" name="cloud-upload"></ion-icon>
         </ion-button>
-        <ion-button slot="end" fill="clear" (click)="delete(img)">
+        <ion-button slot="end" fill="clear" (click)="deleteImages(img)">
           <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-button>
      </ion-item>
    </ion-list>
 </ion-content>
-<ion-footer color="primary">
-  <ion-button fill="clear" expand="full" color="ligh*">
+<ion-footer >
+  <ion-button fill="clear" expand="full" color="light" (click)="selectImage()">
     <ion-icon name="camera" slot="start"></ion-icon>
       Seleccione Imagen
   </ion-button>
