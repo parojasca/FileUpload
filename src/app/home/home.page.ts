@@ -7,6 +7,8 @@ import { HttpClient } from "@angular/common/http";
 import { WebView } from "@ionic-native/ionic-webview/ngx";
 import { Storage } from "@ionic/storage";
 
+import { FilePath } from '@ionic-native/file-path/ngx';
+
 import { finalize } from "rxjs/operators";
 import { ChangeDetectionStrategy } from '@angular/compiler/src/compiler_facade_interface';
 const STORAGE_KEY = 'my_images';
@@ -26,7 +28,8 @@ export class HomePage implements OnInit {
     private plt: Platform,
     private loadingController: LoadingController,
     private ref: ChangeDetectorRef,
-    private webview: WebView
+    private webview: WebView,
+    private filePath: FilePath
 
   ) { }
   ngOnInit() {
@@ -96,14 +99,23 @@ export class HomePage implements OnInit {
       correctOrientation: true
     };
     this.camera.getPicture(options).then(imagePath => {
-      var currentName = imagePath.substr(imagePath.lastIndexof('/') + 1);
-      var correctPath = imagePath.substr(0, imagePath.lastIndexof('/') + 1);
-      this.copyFileToLocalDir(correctPath, currentName, this.createFileName());
+      if (this.plt.is('android')&& sourceType === this.camera.PictureSourceType.PHOTOLIBRARY){
+        this.filePath.resolveNativePath(imagePath)
+        .then(filePath =>{
+          let correctPath = filePath.substr(0, filePath.lastIndexOf('/')+ 1);
+          var currentName = imagePath.substring(imagePath.lastIndexof('/') + 1, imagePath.lastIndexof('?'));
+          this.copyFileToLocalDir(correctPath, currentName, this.createFileName());    
+        });
+      }else{
+        var currentName = imagePath.substr(imagePath.lastIndexof('/') + 1);
+          var correctPath = imagePath.substr(0, imagePath.lastIndexof('/') + 1);
+          this.copyFileToLocalDir(correctPath, currentName, this.createFileName());    
+      }  
     });
   }
 
   copyFileToLocalDir(namePath, currentName, newFilename) {
-    this.file.copyFile(namePath, currentName, this.file.dataDirectory, newFilename).then(_ => {
+    this.file.copyFile(namePath, currentName, this.file.dataDirectory, newFilename).then(success  => {
       this.updateStoredImages(newFilename);
     }, error => {
       this.presentToast('errr');
