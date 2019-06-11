@@ -184,7 +184,7 @@ export class HomePage implements OnInit {
     });
     await loading.present();
 
-    this.http.post('', formData)
+    this.http.post('http://localhost:81/uploads/upload.php', formData)
       .pipe(
         finalize(() => {
           loading.dismiss();
